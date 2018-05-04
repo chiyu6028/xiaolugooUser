@@ -69,6 +69,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);  
         sessionRepository.setDefaultSerializer(fastJsonRedisSerializer);  
         sessionRepository.setDefaultMaxInactiveInterval(36000);
+        sessionRepository.setRedisKeyNamespace("xiaoluSession");
         return sessionRepository;  
     }  
 }  
