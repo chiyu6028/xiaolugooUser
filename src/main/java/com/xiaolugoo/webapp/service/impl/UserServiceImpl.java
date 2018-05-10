@@ -9,6 +9,12 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @Auther: ALEX
+ * @Date: 2018/5/5 17:29
+ * @Description:
+ */
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -31,5 +37,10 @@ public class UserServiceImpl implements UserService {
         map.put("userAccount",userAccount);
         map.put("userPassword",userPassword);
         return  userMapper.userLogin(map);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(User record) {
+        return userMapper.updateByPrimaryKeySelective(record);
     }
 }

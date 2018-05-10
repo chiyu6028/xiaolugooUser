@@ -95,7 +95,7 @@ public class ValidateCodeController {
         }
         // 将四位数字的验证码保存到Session中。
         HttpSession session = req.getSession();
-        session.setAttribute("sessionCode", randomCode.toString());
+        session.setAttribute("validateCode", randomCode.toString());
 
         // 禁止图像缓存。
         resp.setHeader("Pragma", "no-cache");
