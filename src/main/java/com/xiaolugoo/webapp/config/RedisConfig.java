@@ -11,15 +11,17 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializationContext;  
 import org.springframework.data.redis.serializer.StringRedisSerializer;  
 import org.springframework.session.SessionRepository;  
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;  
-  
+import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+
 import java.time.Duration;  
   
 /** 
  *  redis 配置
  */  
 @Configuration  
-@EnableCaching  
+@EnableCaching
+@EnableRedisHttpSession
 public class RedisConfig extends CachingConfigurerSupport {  
   
     @Bean  
@@ -68,7 +70,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         RedisOperationsSessionRepository sessionRepository =  new RedisOperationsSessionRepository(redisTemplate(factory));  
         FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);  
         sessionRepository.setDefaultSerializer(fastJsonRedisSerializer);  
-        sessionRepository.setDefaultMaxInactiveInterval(36000);
+        sessionRepository.setDefaultMaxInactiveInterval(1800);
         sessionRepository.setRedisKeyNamespace("xiaoluSession");
         return sessionRepository;  
     }  

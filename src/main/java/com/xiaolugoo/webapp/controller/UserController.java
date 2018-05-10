@@ -27,6 +27,7 @@ import javax.websocket.server.PathParam;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Api(tags = "用户")
@@ -106,14 +107,14 @@ public class UserController {
     }
 
     @ApiOperation(value="获取用户详细信息", notes="根据url的id来获取用户详细信息")
-    @ApiImplicitParam(name = "id", value = "用户ID", required = true, paramType = "path", dataType = "Integer")
+    @ApiImplicitParam(name = "userId", value = "用户ID", required = true, paramType = "path", dataType = "Integer")
     @ResponseBody
-    @RequestMapping(value = "/getUser/{id}",method = {RequestMethod.GET,RequestMethod.POST})
-    public String selectByPrimaryKey(@PathVariable("id") int id) throws JsonProcessingException {
+    @RequestMapping(value = "/getUser/{userId}",method = {RequestMethod.GET,RequestMethod.POST})
+    public String selectByPrimaryKey(@PathVariable("userId") int userId) throws JsonProcessingException {
         logger.debug("用户详情查询");
         ResultData result = new ResultData();
         try {
-            User user = userService.selectByPrimaryKey(id);
+            User user = userService.selectByPrimaryKey(userId);
             List list = new ArrayList();
             list.add(user);
             if (user != null){
@@ -124,16 +125,16 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             result.setFlag("0");
-            result.setMsg("新增失败！");
+            result.setMsg("查询失败！");
         }
         return mapper.writeValueAsString(result);
     }
 
     @ApiOperation(value = "用户登陆",notes = "根据账户密码登陆")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userAccount",value = "账户",required = true,paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "userPassword",value = "密码",required = true,paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "validateCode",value = "验证码",paramType = "query", dataType = "String")
+            @ApiImplicitParam(name = "userAccount", value = "账户", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "userPassword", value = "密码", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "validateCode", value = "验证码", paramType = "query", dataType = "String")
     })
     @ResponseBody
     @RequestMapping(value = "/login", method = {RequestMethod.GET,RequestMethod.POST})
@@ -198,6 +199,42 @@ public class UserController {
         return mapper.writeValueAsString(result);
     }
 
+    @ApiOperation(value="获取用户登陆日志", notes="获取用户登陆日志")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "用户编号", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "beginDate", value = "开始日期", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "endDate", value = "结束日期", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "loginStatus", value = "登陆状态", paramType = "query", dataType = "String")
+    })
+    @ResponseBody
+    @RequestMapping(value = "/getLoginLogByUserId",method = {RequestMethod.GET,RequestMethod.POST})
+    public String getLoginLogByUserId(@PathParam("userId") String userId,
+                                      @PathParam("beginDate") String beginDate,
+                                      @PathParam("endDate") String endDate,
+                                      @PathParam("loginStatus") String loginStatus,
+                                      HttpServletRequest request) throws JsonProcessingException {
+        logger.debug("用户登陆日志查询");
+        ResultData result = new ResultData();
+        HashMap userMap = new HashMap();
+        userMap.put("userId", userId);
+        userMap.put("beginDate", beginDate);
+        userMap.put("endDate", endDate);
+        userMap.put("loginStatus", loginStatus);
+        try {
+            List userList = loginLogService.selectLoginLog(userMap);
+
+            if (userList.size() > 0){
+                result.setFlag("1");
+                result.setMsg("查询成功！");
+                result.setResult(userList);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setFlag("0");
+            result.setMsg("新增失败！");
+        }
+        return mapper.writeValueAsString(result);
+    }
 
     /*
     * 将用户信息存储到session中
